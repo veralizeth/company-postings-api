@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import postingAPIServer from './posting-api/posting-api-mock-server';
 import { CompanyDB } from './db/company.db';
 import { Company } from './db/company.model';
+import companyPostingsApi from './posting-api/company-posting-api';
 
 // Start the mock Posting API server
 postingAPIServer();
@@ -22,6 +23,9 @@ app.get('/companies', async (req: Request, res: Response) => {
   const companies: Company[] = await companyCollection.find({});
   res.send(companies);
 });
+
+app.use('/', companyPostingsApi);
+
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
