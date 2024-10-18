@@ -68,10 +68,14 @@ describe('GET /company-postings', () => {
   });
 
   it('should return postings without filters', async () => {
-    const response = await request(app).get('/company-postings');
+    const response = await request(app).get('/company-postings').query({page: 1, limit: 2});
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
+      total: 2,
+      page: 1, 
+      limit:2,
+      totalPages: 1,
       postings: [
         {
           companyName: 'Company 1',
@@ -104,6 +108,10 @@ describe('GET /company-postings', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
+      total: 1, 
+      page: 1,
+      limit: 10, 
+      totalPages: 1,
       postings: [
         {
           companyName: 'Company 1',
@@ -142,6 +150,10 @@ describe('GET /company-postings', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
+      total: 1, 
+      page: 1,
+      limit: 10, 
+      totalPages: 1,
       postings: [
         {
           companyName: 'Unknown Company',

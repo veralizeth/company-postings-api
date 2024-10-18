@@ -16,10 +16,9 @@ export const companyPostingApi = (companyBD: CompanyDB) => {
   router.get('/company-postings', async (req: Request, res: Response) => {
     try {
 
-      const { equipmentType, fullPartial } = req.query;
+      const { equipmentType, fullPartial, page = 1, limit = 10 } = req.query;
 
       const response: AxiosResponse<{ postings: Posting[] }> = await axios.get('/postings');
-
       let postings = response.data.postings;
 
       if (equipmentType) {
@@ -30,7 +29,13 @@ export const companyPostingApi = (companyBD: CompanyDB) => {
         postings = postings.filter((p: Posting) => p.freight.fullPartial === fullPartial);
       }
 
-      const companyPostings = postings.map((postings: Posting) => {
+      //Pagination logic.
+
+      const startIndex : number = (Number(page) - 1) * Number(limit);
+      const endIndex : number = startIndex + Number(limit);
+      const paginatedPostings = postings.slice(startIndex, endIndex);
+
+      const companyPostings = paginatedPostings.map((postings: Posting) => {
         const company: Company | null = companyBD.getCompanyById(postings.companyId);
 
         return {
@@ -43,7 +48,13 @@ export const companyPostingApi = (companyBD: CompanyDB) => {
         };
       });
 
-      res.status(200).json({ postings: companyPostings });
+      res.status(200).json({
+        total: postings.length,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(postings.length / Number(limit)),
+        postings: companyPostings
+      });
 
     } catch (error) {
       console.error('Error fetching postings: ', error);
