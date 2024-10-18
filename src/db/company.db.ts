@@ -48,10 +48,15 @@ export class CompanyDB {
     return this.db.getCollection('companies');
   }
 
-  getCompanyById(id: string): Company {
+  getCompanyById(id: string): Company | null {
     const companies: Collection<Company> = this.db.getCollection('companies');
     const result = companies.findOne({ id: id });
-    // TODO: Handle null result
+
+    if (!result) {
+      console.error(`Company with ID ${id} not found.`);
+      return null;
+    }
+
     return result as Company;
   }
 }
